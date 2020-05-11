@@ -1,12 +1,15 @@
 import {Injectable} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
+import {HttpClient, HttpErrorResponse} from '@angular/common/http';
 import {FbAuthResponse, User} from '../../../shared/interfaces';
-import {Observable} from 'rxjs';
+import {Observable, Subject, throwError} from 'rxjs';
 import {environment} from '../../../../environments/environment';
-import {tap} from 'rxjs/operators';
+import {catchError, tap} from 'rxjs/operators';
 
 @Injectable()
 export class AuthService {
+
+  public error$: Subject<string> = new Subject<string>()
+
   constructor(private http: HttpClient) {}
 
   get token(): string {
@@ -21,7 +24,10 @@ export class AuthService {
   login(user: User): Observable<any> {
     user.returnSecureToken = true
     return this.http.post(`https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${environment.apiKey}`, user)
-      .pipe(tap(this.setToken))
+      .pipe(
+        tap(this.setToken),
+        catchError(this.handleError.bind(this))
+      )
   }
 
   logout() {
@@ -30,6 +36,24 @@ export class AuthService {
 
   isAuthenticated(): boolean {
     return !!this.token
+  }
+
+  private handleError(error: HttpErrorResponse) {
+    const { message } = error.error.error
+
+    switch (message) {
+      case 'INVALID_PASSWORD':
+        this.error$.next('Неверный пароль ¯\\_(ツ)_/¯')
+        break
+      case 'EMAIL_NOT_FOUND':
+        this.error$.next('Email не найден ¯\\_(ツ)_/¯')
+        break
+      default:
+        this.error$.next('Что-то пошло не так ¯\\_(ツ)_/¯')
+        break
+    }
+
+    return throwError(error)
   }
 
   private setToken(response: FbAuthResponse | null) {

@@ -1,19 +1,21 @@
-<div class="post">
-  <div class="header">
-    <h1>Post title</h1>
+<div *ngIf="post$| async as post; else loading ">
+  <div class="post">
+    <div class="header">
+      <h1>{{ post.title }}</h1>
 
-    <button routerLink="/" class="btn btn-link">На главную</button>
-  </div>
+      <button routerLink="/" class="btn btn-link">На главную</button>
+    </div>
 
-  <div class="info">
-    <strong>Author</strong>
-    <small>10.05.2020</small>
-  </div>
+    <div class="info">
+      <strong>{{ post.author }}</strong>
+      <small>{{post.date | date:'medium': null: 'ru' }}</small>
+    </div>
 
-  <div>
-    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci deserunt ea quibusdam reprehenderit voluptate. Aperiam architecto et magnam nulla pariatur quia ratione repellat sed voluptatem? Accusantium aliquid amet beatae culpa doloremque eaque eius enim et eveniet harum, in ipsum iusto laudantium maiores necessitatibus neque, pariatur quas quidem repellat, sint veritatis!</p>
-    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci deserunt ea quibusdam reprehenderit voluptate. Aperiam architecto et magnam nulla pariatur quia ratione repellat sed voluptatem? Accusantium aliquid amet beatae culpa doloremque eaque eius enim et eveniet harum, in ipsum iusto laudantium maiores necessitatibus neque, pariatur quas quidem repellat, sint veritatis!</p>
-    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci deserunt ea quibusdam reprehenderit voluptate. Aperiam architecto et magnam nulla pariatur quia ratione repellat sed voluptatem? Accusantium aliquid amet beatae culpa doloremque eaque eius enim et eveniet harum, in ipsum iusto laudantium maiores necessitatibus neque, pariatur quas quidem repellat, sint veritatis!</p>
-    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci deserunt ea quibusdam reprehenderit voluptate. Aperiam architecto et magnam nulla pariatur quia ratione repellat sed voluptatem? Accusantium aliquid amet beatae culpa doloremque eaque eius enim et eveniet harum, in ipsum iusto laudantium maiores necessitatibus neque, pariatur quas quidem repellat, sint veritatis!</p>
+
+    <quill-view-html [content]="post.text"></quill-view-html>
   </div>
 </div>
+
+<ng-template #loading>
+  <p class="text-center">Загружаю пост...</p>
+</ng-template>
